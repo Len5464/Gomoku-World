@@ -1,50 +1,42 @@
 <script setup>
-  import { ref } from "vue";
+  import { ref, reactive, onMounted } from "vue";
   import { computed } from "@vue/reactivity";
-  const boardSize = ref(getComputedStyle(document.documentElement).getPropertyValue("--board-size"));
-  const boardIndexs = computed(() => getBoardIndexs(boardSize.value));
-  let whiteTurn = ref(true);
-  let winner = ref(null);
-  const playerNow = computed(() => (whiteTurn.value ? "⚪" : "⚫"));
+  const boardSize = 19;
+  const BoardLists = (size) => new Array(parseInt(size)).fill().map(() => new Array(parseInt(size)).fill(""));
+  const board = ref(BoardLists(boardSize));
+  const flags = ref({
+    whiteTurn: true,
+    winner: null,
+  });
+  const playerNow = computed(() => (flags.value.whiteTurn ? "⚪" : "⚫"));
   const restart = () => location.reload();
-  console.log(`棋盤大小：${boardSize.value}`);
-  function getBoardIndexs(size) {
-    let result = [];
-    for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
-        const index = String.fromCodePoint(65 + (j % size)) + (size - i);
-        result.push(index);
-      }
-    }
-    return result;
-  }
+  console.log(`棋盤大小：${boardSize}`);
+
   function onCellClick(event) {
-    const cell = event.target;
-    cell.innerText = playerNow.value;
-    cell.disabled = true;
-    const bingos = getBingos(cell.id);
+    event.target.disabled = true;
+    const [row, col] = event.target.dataset.coordinate.split("-").map((e) => ~~e);
+    board.value[row][col] = playerNow.value;
+    const bingos = getBingos([row, col]);
     if (bingos.length) {
-      winner.value = playerNow.value;
-      bingos.forEach((e) => heightlightCells(e));
+      flags.value.winner = playerNow.value;
+      bingos.flat(1).forEach((e) => {
+        document.querySelector(`[data-coordinate="${e[0]}-${e[1]}"]`).classList += " rainbow";
+      });
+    } else if (!board.value.flat().some((e) => e === "")) {
+      flags.value.winner = "平手";
     } else {
-      whiteTurn.value = !whiteTurn.value;
+      flags.value.whiteTurn = !flags.value.whiteTurn;
     }
-  }
-  function heightlightCells(cellsArr) {
-    cellsArr.forEach((e) => {
-      document.querySelector(`#${e}`).classList += " rainbow";
-    });
   }
   function getBingos(origin, state = { NW: [], N: [], NE: [], W: [], E: [], SW: [], S: [], SE: [] }, radius = 1) {
-    const nextState = Object.entries(state).reduce((acc, [dirStr, dirArr]) => {
-      const target = getIndexBySameColor(origin, dirStr, radius);
-      if (target && dirArr.length === radius - 1) acc[dirStr] = [...dirArr, target];
-      else acc[dirStr] = dirArr;
-      return acc;
-    }, {});
+    if (!Array.isArray(origin)) throw "origin必須是陣列";
+    for (let direction in state) {
+      const target = getIndexBySameColor(origin, direction, radius);
+      if (target && state[direction].length === radius - 1) state[direction].push(target);
+    }
     // 八方向末端都不是同色 則結算，否則loop下一階
-    return Object.values(nextState).some((e) => e.length === radius)
-      ? getBingos(origin, nextState, radius + 1)
+    return Object.values(state).some((e) => e.length === radius)
+      ? getBingos(origin, state, radius + 1)
       : [
           [...state.E, origin, ...state.W],
           [...state.NE, origin, ...state.SW],
@@ -53,52 +45,57 @@
         ].filter((e) => e.length >= 5);
   }
   function getIndexBySameColor(origin, direction, radius) {
-    const x = origin.codePointAt(0);
-    const y = ~~origin.substr(1);
+    const [row, col] = origin;
     const result =
       direction === "E"
-        ? String.fromCodePoint(x + radius) + y
+        ? [row + radius, col]
         : direction === "NE"
-        ? String.fromCodePoint(x + radius) + (y + radius)
+        ? [row + radius, col + radius]
         : direction === "N"
-        ? String.fromCodePoint(x) + (y + radius)
+        ? [row, col + radius]
         : direction === "NW"
-        ? String.fromCodePoint(x - radius) + (y + radius)
+        ? [row - radius, col + radius]
         : direction === "W"
-        ? String.fromCodePoint(x - radius) + y
+        ? [row - radius, col]
         : direction === "SW"
-        ? String.fromCodePoint(x - radius) + (y - radius)
+        ? [row - radius, col - radius]
         : direction === "S"
-        ? String.fromCodePoint(x) + (y - radius)
+        ? [row, col - radius]
         : direction === "SE"
-        ? String.fromCodePoint(x + radius) + (y - radius)
+        ? [row + radius, col - radius]
         : null;
-    if (boardIndexs.value.includes(result)) {
-      return document.querySelector(`#${result}`).textContent === document.querySelector(`#${origin}`).textContent
-        ? result
-        : null;
+    if (result.every((e) => e >= 0 && e < board.value.length)) {
+      return board.value[row][col] === board.value[result[0]][result[1]] ? result : null;
     }
   }
+  onMounted(() => {
+    document.getElementById("app").style.setProperty("--board-size", boardSize);
+  });
 </script>
 
 <template>
   <main class="window">
     <aside class="panel">
       <h1 class="panel__title">五子棋遊戲</h1>
-      <button v-if="winner" class="panel__info rainbow" @click="restart">
-        獲勝者是 {{ winner }} <br />👉重新開始遊戲👈
+      <button v-if="flags.winner" class="panel__info rainbow" @click="restart">
+        獲勝者是 {{ flags.winner }} <br />👉重新開始遊戲👈
       </button>
       <button v-else class="panel__info">{{ playerNow }} 的回合</button>
     </aside>
 
     <div class="board">
-      <button
-        class="board__cells"
-        :id="index"
-        v-for="index of boardIndexs"
-        :disabled="winner"
-        @click="onCellClick"
-      ></button>
+      <template v-for="row in board.length" :key="row - 1">
+        <button
+          v-for="col in board.length"
+          class="board__cells"
+          :key="col"
+          :disabled="flags.winner"
+          :data-coordinate="`${row - 1}-${col - 1}`"
+          @click="onCellClick"
+        >
+          {{ board[row - 1][col - 1] }}
+        </button>
+      </template>
     </div>
   </main>
 </template>

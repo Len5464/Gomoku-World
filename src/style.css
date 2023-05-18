@@ -1,52 +1,61 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500&display=swap");
-body * {
-  font-family: "Noto Sans TC", sans-serif;
+body {
+  background-color: rgb(51, 51, 51);
 }
 
 /*Vars*/
 :root {
-  --board-size: 19; /* 最大26 */
+  --board-size: 19; /*預設19*/
 }
 /*end Vars*/
 .window {
-  height: 100vh;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 30% 1fr;
+  font-family: "Noto Sans TC", sans-serif;
+  @media screen and (width > 1200px) {
+    height: 100vh;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 30% 1fr;
+  }
 }
 .panel {
   background-color: whitesmoke;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-}
-.panel__title {
-  text-align: center;
-  margin-top: 1rem;
-}
-.panel__info {
-  margin-top: auto;
-  background-color: gray;
-  color: #fff;
-  border: transparent;
-  width: 100%;
-  height: 100px;
-  font-size: 1.25rem;
-  cursor: pointer;
+  &__title {
+    text-align: center;
+    padding: 1rem;
+  }
+  &__info {
+    margin: auto 2rem 1.5rem 2rem;
+    padding: 0.5rem;
+    background-color: gray;
+    color: #fff;
+    border: 5px solid rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
 }
 .board {
   display: grid;
   grid-template-columns: repeat(var(--board-size), 1fr);
-  width: 100vh;
+  height: 100vw;
   margin: 0 auto;
-}
-.board__cells {
-  width: auto;
-  height: auto;
-  padding: 0;
-  border: 1px solid #000;
-  line-height: 0;
-  cursor: pointer;
+  &__cells {
+    width: auto;
+    height: auto;
+    padding: 0;
+    border: 0px solid transparent;
+    background: no-repeat center url("wood.png");
+    line-height: 0;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  @media screen and (width > 1200px) {
+    width: 100vh;
+    height: auto;
+  }
 }
 .rainbow {
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
@@ -54,9 +63,6 @@ body * {
   animation: AnimeGrade 15s ease infinite;
 }
 
-.debug {
-  background-color: #e73c7e;
-}
 @keyframes AnimeGrade {
   0% {
     background-position: 0% 50%;
