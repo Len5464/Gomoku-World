@@ -1,12 +1,18 @@
 <script setup>
-  import { ref, reactive, onMounted } from "vue";
+  // @ts-check
+  /**
+   * @typedef {[number,number]} Coordinate
+   */
+  import { ref, onMounted } from "vue";
   import { computed } from "@vue/reactivity";
-  const boardSize = 19;
-  const BoardLists = (size) => new Array(parseInt(size)).fill().map(() => new Array(parseInt(size)).fill(""));
+
+  /**@type { function (number) : array[] } */
+  const BoardLists = (size) => new Array(size).fill("").map(() => new Array(size).fill(""));
+  const boardSize = 5;
   const board = ref(BoardLists(boardSize));
   const flags = ref({
     whiteTurn: true,
-    winner: null,
+    winner: "",
   });
   const playerNow = computed(() => (flags.value.whiteTurn ? "⚪" : "⚫"));
   const restart = () => location.reload();
@@ -28,13 +34,16 @@
       flags.value.whiteTurn = !flags.value.whiteTurn;
     }
   }
+
+  /**
+   * @param {Coordinate} origin 中心點
+   * @returns {array} 有賓果就回傳每條賓果的座標集合，沒有就空陣列
+   */
   function getBingos(origin, state = { NW: [], N: [], NE: [], W: [], E: [], SW: [], S: [], SE: [] }, radius = 1) {
-    if (!Array.isArray(origin)) throw "origin必須是陣列";
     for (let direction in state) {
-      const target = getIndexBySameColor(origin, direction, radius);
-      if (target && state[direction].length === radius - 1) state[direction].push(target);
+      const target = findIndexBySameColor(origin, direction, radius);
+      if (target.length && state[direction].length === radius - 1) state[direction].push(target);
     }
-    // 八方向末端都不是同色 則結算，否則loop下一階
     return Object.values(state).some((e) => e.length === radius)
       ? getBingos(origin, state, radius + 1)
       : [
@@ -44,7 +53,14 @@
           [...state.NW, origin, ...state.SE],
         ].filter((e) => e.length >= 5);
   }
-  function getIndexBySameColor(origin, direction, radius) {
+
+  /**
+   * @param {Coordinate} origin 中心點
+   * @param {string} direction N, NE, W, E, SW, S, SE
+   * @param {number} radius 半徑
+   * @returns {Coordinate | array} 跟原點同色的座標，找不到則[]
+   */
+  function findIndexBySameColor(origin, direction, radius) {
     const [row, col] = origin;
     const result =
       direction === "E"
@@ -63,13 +79,14 @@
         ? [row, col - radius]
         : direction === "SE"
         ? [row + radius, col - radius]
-        : null;
-    if (result.every((e) => e >= 0 && e < board.value.length)) {
-      return board.value[row][col] === board.value[result[0]][result[1]] ? result : null;
-    }
+        : [];
+    const inRange = result.every((xy) => xy >= 0 && xy < boardSize);
+    if (!inRange) return [];
+    const isContentMatch = board.value[row][col] === board.value[result[0]][result[1]];
+    return isContentMatch ? result : [];
   }
   onMounted(() => {
-    document.getElementById("app").style.setProperty("--board-size", boardSize);
+    document.getElementById("app").style.setProperty("--board-size", `${boardSize}`);
   });
 </script>
 
@@ -84,12 +101,12 @@
     </aside>
 
     <div class="board">
-      <template v-for="row in board.length" :key="row - 1">
+      <template v-for="row in boardSize" :key="row - 1">
         <button
-          v-for="col in board.length"
+          v-for="col in boardSize"
           class="board__cells"
           :key="col"
-          :disabled="flags.winner"
+          :disabled="!!flags.winner"
           :data-coordinate="`${row - 1}-${col - 1}`"
           @click="onCellClick"
         >
