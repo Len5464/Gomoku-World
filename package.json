@@ -13,7 +13,6 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",
-    "postcss-nested": "^6.0.1",
     "vite": "^4.2.0"
   }
 }
