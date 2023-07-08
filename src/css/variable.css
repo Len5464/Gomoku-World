@@ -1,0 +1,23 @@
+/* vars */
+:root {
+  --board-size: 15; /*預設15*/
+  --radius-size: 20px;
+  --flow-space: 1.5em;
+  --primary: #23d5ab;
+  --secondary: #91ead5;
+  --orange: #ee7752;
+  --pink: #e73c7e;
+  --skyblue: #23a6d5;
+  --lightblue: #91d3ea;
+}
+@keyframes AnimeGrade {
+  0% {
+    background-position: 1% 50%;
+  }
+  50% {
+    background-position: 99% 50%;
+  }
+  100% {
+    background-position: 1% 50%;
+  }
+}

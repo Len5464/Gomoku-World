@@ -1,74 +1,40 @@
 <script setup>
-  import { computed, onMounted, onUnmounted, ref, watch } from "vue";
-  const props = defineProps({ sec: Number, player: String, winner: String });
-  const emit = defineEmits(["timeout"]);
-
-  class Timer {
-    constructor(time) {
-      this.sec = time;
-      this.id = 0;
-    }
-    pause() {
-      clearInterval(this.id);
-      this.id = 0;
-    }
-    resume(callback) {
-      this.id = setInterval(() => {
-        callback(this.sec, this.id);
-        this.sec > 0 ? this.sec-- : this.pause();
-      }, 1000);
-    }
+  // @ts-check
+  import { onMounted, onUnmounted, ref } from "vue";
+  const props = defineProps({
+    time: { type: Number, required: true },
+  });
+  const emit = defineEmits({ countdown: Number });
+  const currentTime = ref(props.time);
+  const id = ref(0);
+  function resume() {
+    id.value = setInterval(() => {
+      emit("countdown", currentTime.value);
+      currentTime.value > 0 ? currentTime.value-- : pause();
+    }, 1000);
   }
-  const timer = ref(new Timer(props.sec));
-  const formattedTime = computed(
-    () => `
-        ${Math.floor(timer.value.sec / 60 / 10)}${Math.floor((timer.value.sec / 60) % 10)}:
-        ${Math.floor((timer.value.sec % 60) / 10)}${Math.floor((timer.value.sec % 60) % 10)}
-        `
-  );
-
-  function checkTimeOut(time, id) {
-    if (time <= 0) emit("timeout");
+  function pause() {
+    clearInterval(id.value);
+    id.value = 0;
   }
-  watch(props, () => {
-    if (timer.value.id) timer.value.pause();
-    if (!props.winner) {
-      timer.value.sec = props.sec;
-      timer.value.resume(checkTimeOut);
-    }
+  function reset() {
+    pause();
+    currentTime.value = props.time;
+    resume();
+  }
+  defineExpose({
+    resume,
+    pause,
+    reset,
   });
   onMounted(() => {
-    timer.value.resume(checkTimeOut);
+    resume();
   });
+
   onUnmounted(() => {
-    timer.value.pause();
+    pause();
   });
 </script>
 <template>
-  <div class="timer">
-    <h1 class="display">{{ formattedTime }}</h1>
-    <button class="btn-media" :disabled="!!props.winner" @click="timer.id ? timer.pause() : timer.resume(checkTimeOut)">
-      {{ timer.id === 0 ? "▶️" : "⏸️" }}
-    </button>
-  </div>
+  <slot :time="currentTime" :isRunning="id > 0" :pause="pause" :resume="resume" :reset="reset"></slot>
 </template>
-<style scoped>
-  .timer {
-    border: 5px solid var(--skyblue);
-    border-radius: 20px;
-    display: flex;
-    gap: 0.25rem;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem;
-  }
-  .display {
-    width: 80px;
-  }
-  .btn-media {
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 1.5rem;
-  }
-</style>

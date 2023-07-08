@@ -1,0 +1,124 @@
+body {
+  background-color: rgba(0, 0, 0, 0.8);
+  font-family: "Noto Sans TC", sans-serif;
+}
+
+/* blocks */
+.btn {
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-size);
+  padding: 0.5em 1em;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.card {
+  background-color: #fff;
+  border-radius: var(--radius-size);
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 1rem;
+}
+
+/* composition */
+.flow > * + * {
+  margin-top: var(--flow-space);
+}
+.align-self-center {
+  align-self: center;
+}
+.mw-300px {
+  max-width: 300px;
+}
+.h-50vh {
+  height: 50vh;
+}
+.position-relative {
+  position: relative;
+}
+.position-absolute {
+  position: absolute;
+}
+.translate-middle {
+  transform: translate(-50%, -50%);
+}
+.top-50 {
+  top: 50%;
+}
+.top-75 {
+  top: 75%;
+}
+.left-50 {
+  left: 50%;
+}
+.left-0 {
+  left: 0;
+}
+/* utils */
+.text-align-center {
+  text-align: center;
+}
+.text-white {
+  color: #fff;
+}
+
+.fs-5px {
+  font-size: 5px;
+}
+.fs-20px {
+  font-size: 20px;
+}
+.br-20 {
+  border-radius: 20px;
+}
+.bg-white {
+  background-color: #fff;
+}
+.bg-black {
+  background-color: black;
+}
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
+.btn-primary {
+  display: block;
+  background-color: var(--primary);
+  font-weight: bold;
+  letter-spacing: 0.25em;
+  color: darkslategrey;
+}
+.btn-primary:hover {
+  background-color: var(--secondary);
+}
+.btn-sky {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  background-color: whitesmoke;
+  border-color: var(--skyblue);
+}
+.btn-sky:hover {
+  background-color: lightgrey;
+}
+.btn-gray {
+  background-color: whitesmoke;
+  color: black;
+}
+
+@media screen and (width > 640px) {
+  .fs-sm-10px {
+    font-size: 10px;
+  }
+}
+@media screen and (width > 1200px) {
+  .fs-lg-30px {
+    font-size: 30px;
+  }
+}

@@ -12,9 +12,14 @@
           <slot name="header">default header</slot>
         </div>
 
+        <div class="modal-body">
+          <slot name="body">default body</slot>
+        </div>
+
         <div class="modal-footer">
-          <slot name="footer"> default footer </slot>
-          <button class="modal-default-button" @click="$emit('close')">OK</button>
+          <slot name="footer">
+            <button class="modal-default-button" @click="$emit('close')">OK</button>
+          </slot>
         </div>
       </div>
     </div>
@@ -35,11 +40,12 @@
   }
 
   .modal-container {
-    width: 300px;
+    min-width: 300px;
+    max-width: 600px;
     margin: auto;
     padding: 20px 30px;
     background-color: #fff;
-    border: 5px solid var(--lightgreen);
+    border: 5px solid var(--primary);
     border-radius: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     transition: all 0.3s ease;
@@ -47,20 +53,28 @@
 
   .modal-header h3 {
     margin-top: 0;
-    color: var(--lightgreen);
+    color: var(--primary);
   }
 
   .modal-body {
     margin: 20px 0;
+    max-height: 50vh;
+    overflow: scroll;
   }
 
   .modal-default-button {
     float: right;
+    padding: 0.25rem 1rem;
     border: 3px solid rgba(0, 0, 0, 0.1);
     border-radius: 12px;
+    color: #000;
+    text-decoration: none;
     cursor: pointer;
   }
-
+  .modal-default-button:hover {
+    background-color: lightgray;
+    transition: 0.3s;
+  }
   .modal-enter-from {
     opacity: 0;
   }

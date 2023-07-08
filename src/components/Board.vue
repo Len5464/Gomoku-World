@@ -1,33 +1,34 @@
 <script setup>
   // @ts-check
-  import { ref } from "vue";
+  import { computed, ref } from "vue";
   const props = defineProps({
-    size: {
-      type: Number,
-      default: 19,
-    },
-    player: String,
+    size: { type: Number, required: true },
+    whiteTurn: Boolean,
     winner: String,
+    indexEnabled: Boolean,
+    players: {
+      type: Array,
+      default: ["p1", "p2"],
+    },
   });
-  const emit = defineEmits({
-    check: String,
-  });
-  const board = ref(new Array(props.size).fill("").map(() => new Array(props.size).fill("")));
+  const emit = defineEmits(["played", "win"]);
+  const board = ref(Array.from({ length: props.size }, () => new Array(props.size))); // size*size array
+
   function onCellClick(event) {
     event.target.disabled = true;
     const coordinate = event.target.dataset.coordinate;
     const [row, col] = coordinate.split("-").map((e) => ~~e);
-    board.value[row][col].textContent = props.player;
-    const bingos = getBingos([row, col]);
-    if (bingos.length) {
-      bingos.flat(1).forEach((e) => {
+    const formattedIndex = formatBoardIndex(row + 1, col + 1);
+    board.value[row][col].textContent = props.whiteTurn ? "⚪" : "⚫";
+    emit("played", formattedIndex);
+    const results = findFiveInRow([row, col]);
+    if (results.length) {
+      results.flat(1).forEach((e) => {
         board.value[e[0]][e[1]].dataset.bingo = true;
       });
-      emit("check", props.player);
+      emit("win", props.whiteTurn ? props.players[1] : props.players[0]);
     } else if (!board.value.flat(1).some((elm) => elm.textContent === "")) {
-      emit("check", "平手");
-    } else {
-      emit("check", coordinate);
+      emit("win", "沒有人");
     }
   }
 
@@ -36,13 +37,13 @@
    * @param {Coordinate} origin 中心點
    * @returns {array} 有賓果就回傳每條賓果的座標陣列集合，沒有就空陣列
    */
-  function getBingos(origin, states = { NW: [], N: [], NE: [], W: [], E: [], SW: [], S: [], SE: [] }, radius = 1) {
+  function findFiveInRow(origin, states = { NW: [], N: [], NE: [], W: [], E: [], SW: [], S: [], SE: [] }, radius = 1) {
     for (let direction in states) {
       const target = findContentMatch(origin, direction, radius);
       if (target.length && states[direction].length === radius - 1) states[direction].push(target);
     }
     return Object.values(states).some((e) => e.length === radius)
-      ? getBingos(origin, states, radius + 1)
+      ? findFiveInRow(origin, states, radius + 1)
       : [
           [...states.E, origin, ...states.W],
           [...states.NE, origin, ...states.SW],
@@ -51,6 +52,7 @@
         ].filter((e) => e.length >= 5);
   }
 
+  /** @type {(origin:Coordinate, direction:String, radius:Number)=> Array} */
   function findContentMatch(origin, direction, radius) {
     const [row, col] = origin;
     const result =
@@ -76,20 +78,32 @@
     const isContentMatch = board.value[row][col].textContent === board.value[result[0]][result[1]].textContent;
     return isContentMatch ? result : [];
   }
+
+  /**@type {( row:Number , col:Number )=> String} */
+  function formatBoardIndex(row, col) {
+    if (col > 26) return `${col}-${row}`;
+    else return String.fromCodePoint(64 + col) + row;
+  }
 </script>
 <template>
   <div class="board">
     <template v-for="row in props.size" :key="row">
-      <button
-        v-for="col in props.size"
-        class="cell"
-        :data-coordinate="`${row - 1}-${col - 1}`"
-        :ref="(e) => (board[row - 1][col - 1] = e)"
-        :disabled="!!props.winner"
-        @click="onCellClick"
-      >
-        {{ board[row - 1][col - 1].textContent }}
-      </button>
+      <template v-for="col in props.size" :key="col">
+        <div class="cell-wrap">
+          <span v-show="indexEnabled" class="index">
+            {{ formatBoardIndex(row, col) }}
+          </span>
+          <button
+            class="cell"
+            :data-coordinate="`${row - 1}-${col - 1}`"
+            :ref="(e) => (board[row - 1][col - 1] = e)"
+            :disabled="!!props.winner"
+            @click="onCellClick"
+          >
+            {{ board[row - 1][col - 1]?.textContent }}
+          </button>
+        </div>
+      </template>
     </template>
   </div>
 </template>
@@ -99,28 +113,57 @@
     display: grid;
     grid-template-columns: repeat(var(--board-size), 1fr);
     margin: 0 auto;
-    width: 100vw;
-    height: 100vw;
-  }
-  @media screen and (min-width: 1200px) {
-    .board {
-      width: 100vh;
-      height: 100vh;
-    }
+    width: calc(100vh - 225px);
+    height: calc(100vh - 225px);
   }
   .cell {
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 100%;
     padding: 0;
     border: 0px solid transparent;
     background: no-repeat center url("wood.png");
     line-height: 0;
     font-size: 1.5rem;
     cursor: pointer;
+    position: absolute;
   }
   .cell[data-bingo="true"] {
-    background: linear-gradient(-45deg, var(--orange), var(--pink), var(--skyblue), var(--lightgreen));
+    background: linear-gradient(-45deg, var(--orange), var(--pink), var(--skyblue), var(--primary));
     background-size: 400% 400%;
     animation: AnimeGrade 15s ease infinite;
+  }
+  .cell-wrap {
+    width: calc((100vh - 225px) / var(--board-size));
+    height: calc((100vh - 225px) / var(--board-size));
+    position: relative;
+  }
+  .index {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    text-align: center;
+    background-color: black;
+    color: white;
+    font-size: 8px;
+    font-weight: bold;
+  }
+  @media screen and (width > 1200px) {
+    .board {
+      width: 100vh;
+      height: 100vh;
+    }
+    .cell {
+      font-size: 1.5rem;
+    }
+    .cell-wrap {
+      width: calc(100vh / var(--board-size));
+      height: calc(100vh / var(--board-size));
+    }
+    .index {
+      font-size: 12px;
+    }
   }
 </style>
