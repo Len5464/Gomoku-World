@@ -1,18 +1,21 @@
 <script setup>
-  import { ref, watchEffect } from "vue";
-  import { useRouter } from "vue-router";
+  import { onMounted, ref, watchEffect } from "vue";
+  import { useRoute, useRouter } from "vue-router";
   import GoBack from "../components/GoBack.vue";
   import NavTabs from "../components/NavTabs.vue";
   import RuleGuideClassic from "../views/RuleGuideClassic.vue";
+  import RuleGuidePente from "../views/RuleGuidePente.vue";
+  const router = useRouter();
+  const route = useRoute();
   const rule = ref({
     size: 15,
     sec: 120,
     players: ["玩家一", "玩家二"],
     roundType: "only-one",
+    gameType: route.query?.gameType || "classic",
   });
   const sizeRange = [5, 30];
   const timeRange = [60, 600];
-  const router = useRouter();
   function onSubmit() {
     if (rule.value.size > sizeRange[1] || rule.value.size < sizeRange[0])
       window.alert(`棋盤大小必須介於${sizeRange}之間`);
@@ -20,6 +23,9 @@
       window.alert(`遊戲時間必須介於${timeRange}秒之間`);
     else router.push({ name: "game", query: rule.value });
   }
+  onMounted(() => {
+    console.log();
+  });
 </script>
 <template>
   <div class="view">
@@ -27,7 +33,8 @@
       <NavTabs :tab-names="['遊戲規則', '遊戲設定']">
         <GoBack class="btn-back | me-auto">←</GoBack>
         <template #tab1>
-          <RuleGuideClassic></RuleGuideClassic>
+          <RuleGuidePente v-if="route.query.gameType === 'pente'"></RuleGuidePente>
+          <RuleGuideClassic v-else></RuleGuideClassic>
         </template>
         <template #tab2>
           <form class="container">

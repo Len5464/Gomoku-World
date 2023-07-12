@@ -2,8 +2,10 @@
   import { ref } from "vue";
   import Modal from "../components/Modal.vue";
   import RuleGuideClassic from "../views/RuleGuideClassic.vue";
+  import RuleGuidePente from "../views/RuleGuidePente.vue";
   const props = defineProps({
     show: Boolean,
+    ruleGuide: String,
   });
 
   const isShowRule = ref(false);
@@ -50,7 +52,8 @@
     <Modal :show="isShowRule" @close="isShowRule = false">
       <template #header> 規則 </template>
       <template #body>
-        <RuleGuideClassic></RuleGuideClassic>
+        <RuleGuidePente v-if="ruleGuide === 'pente'"></RuleGuidePente>
+        <RuleGuideClassic v-else></RuleGuideClassic>
       </template>
     </Modal>
   </Teleport>
@@ -66,8 +69,8 @@
     cursor: pointer;
     z-index: 1;
     position: absolute;
-    top: 37px;
-    left: 1rem;
+    top: 0.5rem;
+    left: 0.5rem;
   }
   button:hover {
     background-color: lightgray;

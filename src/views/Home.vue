@@ -1,7 +1,7 @@
 <script setup></script>
 <template>
   <div class="view |">
-    <header class="h-50vh position-relative">
+    <header class="h-50 position-relative">
       <p class="banner | position-absolute left-50 top-75 translate-middle">
         ⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪
         ⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪
@@ -25,7 +25,7 @@
     <main class="mw-300px mx-auto d-flex flex-column">
       <h1 class="title | p-3 align-self-center">單機五子棋</h1>
       <RouterLink to="rule" class="btn btn-primary |">經典規則</RouterLink>
-      <RouterLink to="test" class="btn btn-primary |">玉攻棋</RouterLink>
+      <RouterLink :to="{ name: 'rule', query: { gameType: 'pente' } }" class="btn btn-primary |">玉攻棋</RouterLink>
     </main>
   </div>
 </template>

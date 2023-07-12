@@ -4,7 +4,6 @@ import Home from "../views/Home.vue";
 const routes = [
   { path: "/", name: "Home", component: Home },
   { path: "/rule", name: "rule", component: () => import("../views/GameRule.vue") },
-  { path: "/test", name: "test", component: () => import("../views/Test.vue") },
   {
     path: "/game",
     name: "game",
@@ -14,6 +13,7 @@ const routes = [
       sec: parseInt(route.query.sec),
       players: route.query.players,
       roundType: route.query.roundType,
+      gameType: route.query.gameType,
     }),
   },
   { path: "/:domain(.*)*", name: "NotFound", component: () => import("../views/404.vue") },
