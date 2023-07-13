@@ -48,7 +48,7 @@
   .view {
     width: 100vw;
     height: 100vh;
-    background-image: url("bg.svg");
+    background-image: url("../assets/bg.svg");
     background-position: center center;
     background-size: 5%;
   }

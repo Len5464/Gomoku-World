@@ -178,7 +178,7 @@
     width: 105%;
     height: 105%;
     border: 0px solid transparent;
-    background: no-repeat center url("wood.png");
+    background: no-repeat center url("../assets/wood.png");
     font-size: 1.25rem;
     line-height: 0;
     cursor: pointer;
