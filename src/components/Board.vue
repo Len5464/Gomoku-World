@@ -144,7 +144,7 @@
   });
 </script>
 <template>
-  <div class="board">
+  <div class="view">
     <template v-for="row in props.size" :key="row">
       <template v-for="col in props.size" :key="col">
         <div class="cell-wrap">
@@ -157,9 +157,7 @@
             :ref="(e) => (board[row - 1][col - 1] = e)"
             :disabled="!!props.winner"
             @click="onCellClick"
-          >
-            {{ board[row - 1][col - 1]?.textContent }}
-          </button>
+          ></button>
         </div>
       </template>
     </template>
@@ -167,25 +165,26 @@
 </template>
 
 <style scoped>
-  .board {
+  .view {
     display: grid;
     grid-template-columns: repeat(var(--board-size), 1fr);
     margin: 0 auto;
-    width: calc(100vh - 225px);
-    height: calc(100vh - 225px);
+    width: calc(100vh - 213px);
+    height: calc(100vh - 213px);
   }
   .cell {
-    width: 105%;
-    height: 105%;
-    border: 0px solid transparent;
-    background: no-repeat center url("../assets/wood.png");
-    font-size: 1.25rem;
-    line-height: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    text-align: center;
+    padding: 0;
     cursor: pointer;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: -2px;
+    z-index: 1;
+    color: black;
   }
   .cell[data-bingo="true"] {
     background: linear-gradient(-45deg, var(--orange), var(--pink), var(--skyblue), var(--primary));
@@ -193,37 +192,34 @@
     animation: AnimeGrade 15s ease infinite;
   }
   .cell-wrap {
-    width: calc((100vh - 230px) / var(--board-size));
-    height: calc((100vh - 230px) / var(--board-size));
     position: relative;
+    background-image: url("../assets/wood.png");
+    background-position: center center;
   }
   .tags {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90%;
-    text-align: center;
     background-color: black;
     color: white;
     font-size: 12px;
     font-weight: bold;
+    padding: 0.25em;
   }
-  @media screen and (width > 1200px) {
-    .board {
+  @media screen and (min-width: 992px) {
+    .cell {
+      font-size: 1.25rem;
+    }
+  }
+  @media screen and (min-width: 1200px) {
+    .view {
       width: 100vh;
       height: 100vh;
     }
     .cell {
       font-size: 1.75rem;
-    }
-    .cell-wrap {
-      width: calc(100vh / var(--board-size));
-      height: calc(100vh / var(--board-size));
-    }
-    .tags {
-      font-size: 12px;
     }
   }
 </style>

@@ -80,9 +80,11 @@
 </script>
 
 <template>
-  <div class="view | container-fluid">
+  <div class="full-screen container-fluid">
     <main class="row align-items-stretch">
-      <section class="panel | col-xl-3 col-12 row flex-xl-column align-items-center pt-3 g-0 flow">
+      <section
+        class="panel | col-xl-3 col-12 row flex-xl-column align-items-center pt-3 g-0 flow bg-white text-align-center"
+      >
         <MenuBtn
           :show="menuEnabled"
           :ruleGuide="gameType"
@@ -91,7 +93,7 @@
         ></MenuBtn>
         <h2 class="my-auto" v-if="!!game.winner">{{ game.winner }}獲勝</h2>
         <h2 v-else class="my-auto">第{{ game.round }}回合</h2>
-        <div class="row col-10 col-xl-8 mx-auto px-0 py-3">
+        <div class="row col-10 col-xl-8 mx-auto px-0 py-2">
           <span class="col-6">
             {{ game.players[0] }} ⚫
             <br />
@@ -118,9 +120,32 @@
             @click="isRunning ? pause() : resume()"
           >
             <h2>{{ formatMMSS(time) }}</h2>
-            <span style="font-size: 1.25rem">
-              {{ isRunning ? "⏸️" : "▶️" }}
-            </span>
+            <svg
+              v-if="isRunning"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-pause-circle-fill"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.25 5C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5zm3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5z"
+              />
+            </svg>
+            <svg
+              v-else
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-play-circle-fill"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"
+              />
+            </svg>
           </button>
         </Timer>
         <button
@@ -138,7 +163,7 @@
           {{ game.isTurnWhite ? "⚪" : "⚫" }} 的回合
         </button>
       </section>
-      <section class="board | row col-xl-9 col-12 g-0">
+      <section class="board | col-xl-9 col-12 g-0">
         <Board :size="size" v-bind="game" @win="onWin" @played="onTurnChange" @capture="onCapture" :key="game.round" />
       </section>
     </main>
@@ -166,27 +191,21 @@
   </Teleport>
 </template>
 <style scoped>
-  .view {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-  }
   .btn-gray[data-bingo="true"] {
     color: white;
     background: linear-gradient(-90deg, var(--orange), var(--pink), var(--skyblue), var(--primary));
     background-size: 400% 400%;
     animation: AnimeGrade 15s ease infinite;
   }
-  .panel {
-    background-color: white;
-    text-align: center;
-  }
   .board {
     overflow-x: scroll;
   }
-  .player-point {
+  .bi {
+    width: 25px;
+    height: 25px;
+    color: var(--skyblue);
   }
-  @media screen and (width < 1200px) {
+  @media screen and (max-width: 1200px) {
     h2 {
       font-size: 18px;
     }

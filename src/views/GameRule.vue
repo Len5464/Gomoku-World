@@ -14,7 +14,7 @@
     roundType: "only-one",
     gameType: route.query?.gameType || "classic",
   });
-  const sizeRange = [5, 30];
+  const sizeRange = [5, 20];
   const timeRange = [60, 600];
   function onSubmit() {
     if (rule.value.size > sizeRange[1] || rule.value.size < sizeRange[0])
@@ -28,8 +28,8 @@
   });
 </script>
 <template>
-  <div class="view">
-    <nav class="window | container">
+  <div class="full-screen bg-orange-blocks">
+    <nav class="position-relative top-25 container">
       <NavTabs :tab-names="['遊戲規則', '遊戲設定']">
         <GoBack class="btn-back | me-auto">←</GoBack>
         <template #tab1>
@@ -38,7 +38,7 @@
         </template>
         <template #tab2>
           <form class="container">
-            <ul class="row align-items-center g-3 mt-5">
+            <ul class="row align-items-center g-3 mt-5 ps-0 ps-md-4">
               <li class="d-flex col-lg-6">
                 <label class="me-auto" for="size">棋盤大小:</label>
                 <input
@@ -109,22 +109,6 @@
   </div>
 </template>
 <style scoped>
-  .view {
-    width: 100vw;
-    height: 100vh;
-    background-image: url("../assets/bg.svg");
-    background-position: center center;
-    background-size: 5%;
-  }
-  .tab {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .window {
-    position: relative;
-    top: 20%;
-  }
   .btn-back {
     border-radius: 10px 10px 0px 0px;
     background-color: #fff;
@@ -132,15 +116,10 @@
     cursor: pointer;
   }
   .btn-back:hover {
-    background-color: lightgrey;
+    background-color: var(--gray-300);
   }
 
   input:invalid {
     box-shadow: 0px 0px 10px var(--pink);
-  }
-  @media screen and (width < 625px) {
-    ul {
-      padding: 0;
-    }
   }
 </style>

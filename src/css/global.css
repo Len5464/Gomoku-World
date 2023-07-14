@@ -21,9 +21,12 @@ body {
 
 /* composition */
 .flow > * + * {
-  margin-top: var(--flow-space);
+  margin-top: var(--flow-space, 1rem);
 }
-
+.full-screen {
+  width: 100vw;
+  height: 100vh;
+}
 .position-relative {
   position: relative;
 }
@@ -33,17 +36,23 @@ body {
 .translate-middle {
   transform: translate(-50%, -50%);
 }
-.mw-300px {
-  max-width: 300px;
-}
+
 .h-50 {
   height: 50%;
 }
-
+.w-50 {
+  width: 50%;
+}
+.top-100 {
+  top: 100%;
+}
 .top-75 {
   top: 75%;
 }
-.left-50 {
+.top-25 {
+  top: 25%;
+}
+.start-50 {
   left: 50%;
 }
 
@@ -77,20 +86,40 @@ body {
   gap: 1rem;
   align-items: center;
   justify-content: center;
-  background-color: whitesmoke;
+  background-color: var(--light);
   border-color: var(--skyblue);
 }
 .btn-sky:hover {
-  background-color: lightgrey;
+  background-color: var(--gray-300);
 }
 .btn-gray {
-  background-color: whitesmoke;
+  background-color: var(--light);
   color: black;
 }
 .btn-gray:hover {
-  background-color: lightgrey;
+  background-color: var(--gray-300);
 }
 .btn-gray:disabled {
-  background-color: gray;
-  color: white;
+  background-color: var(--gray-600);
+  color: #fff;
+}
+.round {
+  border-radius: var(--radius-size, 5px);
+}
+.bg-dark {
+  background-color: var(--dark);
+}
+.bg-white {
+  background-color: white;
+}
+.bg-orange-blocks {
+  background-image: url("../assets/bg.svg");
+  background-position: center center;
+  background-size: 5%;
+}
+.text-light {
+  color: var(--light);
+}
+.fs-24px {
+  font-size: 24px;
 }

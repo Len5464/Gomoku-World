@@ -29,7 +29,7 @@
   <Teleport to="body">
     <Transition>
       <div v-if="show" class="wrap">
-        <ul class="lists | flow">
+        <ul class="lists">
           <li><RouterLink to="/" class="btn btn-primary">返回主頁</RouterLink></li>
           <li><a class="btn btn-primary" @click="isShowRule = true">規則說明</a></li>
         </ul>
@@ -65,7 +65,7 @@
     line-height: 1em;
     border: none;
     background-color: white;
-    border-radius: var(--radius-size);
+    border-radius: var(--radius-size, 20px);
     cursor: pointer;
     z-index: 1;
     position: absolute;
@@ -90,5 +90,8 @@
     padding: 0;
     margin: auto auto;
     list-style: none;
+  }
+  .lists > * + * {
+    margin-top: 2rem;
   }
 </style>

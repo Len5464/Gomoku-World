@@ -1,60 +1,27 @@
 <script setup></script>
 <template>
-  <div class="view |">
-    <header class="h-50 position-relative">
-      <p class="banner | position-absolute left-50 top-75 translate-middle">
-        ⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪
-        ⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪
-        ⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚫⚪⚫⚫⚫⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪
-        ⚪⚫⚫⚪⚪⚪⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚫⚫⚫⚫⚫⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪
-        ⚪⚫⚫⚪⚫⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚫⚪⚫⚫⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚫⚪⚪⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪
-        ⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪
-        ⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪
-        ⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚪⚫⚫⚫⚫⚪⚪
-        ⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪
-        ⚪⚪⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚫⚫⚫⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚪⚪⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚪⚪⚪
-        ⚪⚪⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚪⚪⚪⚪⚪⚫⚫⚪⚫⚫⚪⚪⚪⚪⚪⚪
-        ⚪⚪⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚪⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚪⚪
-        ⚪⚪⚪⚪⚪⚫⚫⚪⚫⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚫⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚪⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚪⚪
-        ⚪⚪⚪⚪⚪⚫⚫⚫⚫⚫⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚪⚫⚫⚪⚪⚪⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚪⚪
-        ⚪⚪⚪⚪⚪⚫⚫⚫⚪⚫⚫⚫⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚪⚪⚪⚪⚪⚫⚫⚪⚫⚫⚪⚪⚪⚪⚪⚪
-        ⚪⚪⚪⚪⚪⚫⚫⚪⚪⚪⚫⚫⚪⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚫⚫⚪⚪⚫⚫⚪⚪⚪⚫⚫⚫⚫⚫⚫⚪⚪⚪⚫⚫⚫⚫⚪⚪⚪⚪⚪⚪⚪
-        ⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪⚪
-      </p>
+  <div class="full-screen bg-orange-blocks d-flex flex-column">
+    <header class="position-relative d-flex h-50 p-3" style="min-height: 380px">
+      <img src="../assets/header.png" alt="Header Image" />
+      <h1 class="position-absolute top-100 start-50 translate-middle fs-24px bg-dark text-light px-3 py-1 round">
+        單機五子棋
+      </h1>
     </header>
-    <main class="mw-300px mx-auto d-flex flex-column">
-      <h1 class="title | p-3 align-self-center">單機五子棋</h1>
-      <RouterLink to="rule" class="btn btn-primary |">經典規則</RouterLink>
-      <RouterLink :to="{ name: 'rule', query: { gameType: 'pente' } }" class="btn btn-primary |">玉攻棋</RouterLink>
+    <main
+      class="mx-auto h-50 d-flex flex-column justify-content-center align-items-stretch"
+      style="gap: 2rem; width: 300px"
+    >
+      <RouterLink to="rule" class="btn btn-primary">經典規則</RouterLink>
+      <RouterLink :to="{ name: 'rule', query: { gameType: 'pente' } }" class="btn btn-primary">玉攻棋</RouterLink>
     </main>
   </div>
 </template>
 
 <style scoped>
-  main {
-    text-align: center;
-    gap: 3rem;
-  }
-  .title {
-    background-color: black;
-    color: white;
-    border-radius: 20px;
-  }
-  .banner {
-    font-size: 5px;
-    width: 53em;
-    line-height: 1em;
-  }
-  .view {
-    width: 100vw;
-    height: 100vh;
-    background-image: url("../assets/bg.svg");
-    background-position: center center;
-    background-size: 5%;
-  }
-  @media screen and (width > 625px) {
-    .banner {
-      font-size: 12px;
-    }
+  img {
+    margin: auto auto 0 auto;
+    width: 80vw;
+    max-width: 920px;
+    height: auto;
   }
 </style>
