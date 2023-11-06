@@ -1,6 +1,7 @@
 <script setup>
   // @ts-check
   import { onMounted, ref } from "vue";
+
   const props = defineProps({
     size: { type: Number, required: true },
     isTurnWhite: Boolean,
@@ -15,34 +16,36 @@
   const emit = defineEmits({ played: String, win: String, capture: Number });
   const board = ref(Array.from({ length: props.size }, () => new Array(props.size))); // size*size array
   function onCellClick(event) {
-    event.target.disabled = true;
     const coordinate = event.target.dataset.coordinate;
-    const [row, col] = coordinate.split("-").map((e) => ~~e);
+    if (!coordinate) return;
+    event.target.disabled = true;
+    const [row, col] = coordinate.split("-").map((e) => parseInt(e));
     const formattedIndex = formatBoardIndex(row + 1, col + 1);
     board.value[row][col].textContent = props.isTurnWhite ? "⚪" : "⚫";
     emit("played", formattedIndex);
     const findFiveInRow = FiveInRowChecker();
     const results = findFiveInRow([row, col]);
-    if (results.length) {
-      results.flat(1).forEach((e) => {
-        board.value[e[0]][e[1]].dataset.bingo = true;
-      });
-      emit("win", props.isTurnWhite ? props.players[1] : props.players[0]);
-    } else if (!board.value.flat(1).some((elm) => elm.textContent === "")) {
-      emit("win", "沒有人");
-    }
+
     if (props.gameType === "pente") {
       const findCaptures = CaptureChecker();
       const captures = findCaptures([row, col]);
       if (captures.length) {
         const logs = captures.map(([row, col]) => formatBoardIndex(row + 1, col + 1));
         console.log(`${props.isTurnWhite ? props.players[1] : props.players[0]}捕獲 @ :${logs}`);
-        emit("capture", captures.length);
         captures.forEach(([row, col]) => {
-          board.value[row][col].textContent = "";
-          board.value[row][col].disabled = false;
+          board.value[row][col].classList.add("fade-out");
         });
+        emit("capture", captures.length);
       }
+    }
+
+    if (results.length) {
+      results.flat(1).forEach((e) => {
+        board.value[e[0]][e[1]].dataset.bingo = true;
+      });
+      emit("win", props.isTurnWhite ? props.players[1] : props.players[0]);
+    } else if (board.value.flat(1).every((elm) => elm.textContent && !elm.classList.contains("fade-out"))) {
+      emit("win", "沒有人");
     }
   }
 
@@ -56,7 +59,7 @@
     let i = directions.length;
     /**
      * @param {Coordinate} origin 原點座標陣列
-     * @returns {Array} 捕獲的座標陣列
+     * @returns {Array<Coordinate>} 捕獲的座標陣列
      */
     return function recursive(origin) {
       i--;
@@ -77,7 +80,7 @@
     let i = directions.length;
     /**
      * @param {Coordinate} origin 原點座標陣列
-     * @returns {Array} 五連珠的座標陣列
+     * @returns {Array<Coordinate>} 五連珠的座標陣列
      */
     return function recursive(origin) {
       i--;
@@ -102,7 +105,7 @@
   }
   /**
    *
-   * @param {Array} origin 原點座標陣列
+   * @param {Coordinate} origin 原點座標陣列
    * @param {String} direction "NW", "N", "NE", "W", "E", "SW", "S", "SE"
    * @param {Number} radius 半徑
    */
@@ -135,6 +138,15 @@
     if (col > 26) return `${col}-${row}`;
     else return String.fromCodePoint(64 + col) + row;
   }
+
+  function onFadeDone(event) {
+    const cell = event.target;
+    if (cell.classList.contains("fade-out")) {
+      cell.textContent = "";
+      cell.disabled = false;
+      cell.classList.remove("fade-out");
+    }
+  }
   onMounted(() => {
     const mid = Math.floor(props.size / 2);
     if (props.gameType === "pente") {
@@ -144,11 +156,24 @@
   });
 </script>
 <template>
-  <div class="view">
-    <template v-for="row in props.size" :key="row">
-      <template v-for="col in props.size" :key="col">
+  <div
+    class="view"
+    @click="onCellClick"
+    @transitionend="onFadeDone"
+  >
+    <template
+      v-for="row in props.size"
+      :key="row"
+    >
+      <template
+        v-for="col in props.size"
+        :key="col"
+      >
         <div class="cell-wrap">
-          <span v-show="indexEnabled" class="tags">
+          <span
+            v-show="indexEnabled"
+            class="index-tags"
+          >
             {{ formatBoardIndex(row, col) }}
           </span>
           <button
@@ -156,7 +181,6 @@
             :data-coordinate="`${row - 1}-${col - 1}`"
             :ref="(e) => (board[row - 1][col - 1] = e)"
             :disabled="!!props.winner"
-            @click="onCellClick"
           ></button>
         </div>
       </template>
@@ -184,6 +208,7 @@
     position: absolute;
     top: -2px;
     z-index: 1;
+    opacity: 1;
     color: black;
   }
   .cell[data-bingo="true"] {
@@ -196,7 +221,13 @@
     background-image: url("../assets/wood.png");
     background-position: center center;
   }
-  .tags {
+
+  .fade-out {
+    opacity: 0;
+    transition: all 0.3s ease-out;
+    transform: scale(3);
+  }
+  .index-tags {
     position: absolute;
     z-index: 2;
     top: 50%;
