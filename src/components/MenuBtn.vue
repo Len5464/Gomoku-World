@@ -7,11 +7,15 @@
     show: Boolean,
     ruleGuide: String,
   });
+  const emit = defineEmits(["open", "close"]);
 
   const isShowRule = ref(false);
 </script>
 <template>
-  <button class="hamburger" @click="$emit('open')">
+  <button
+    class="btn-menu"
+    @click="emit('open')"
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
@@ -27,29 +31,34 @@
     </svg>
   </button>
   <Teleport to="body">
-    <Transition>
-      <div v-if="show" class="wrap">
-        <ul class="lists">
-          <li><RouterLink to="/" class="btn btn-primary">返回主頁</RouterLink></li>
-          <li><a class="btn btn-primary" @click="isShowRule = true">規則說明</a></li>
+    <Transition name="menu">
+      <div
+        v-if="show"
+        class="mask"
+        @click="emit('close')"
+      >
+        <ul class="menu-lists">
+          <li>
+            <RouterLink
+              to="/"
+              class="btn-list"
+              >返回主頁
+            </RouterLink>
+          </li>
+          <li>
+            <a
+              class="btn-list"
+              @click="isShowRule = true"
+              >規則說明</a
+            >
+          </li>
         </ul>
-        <button @click="$emit('close')" style="color: red">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="currentColor"
-            class="bi bi-x-lg"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"
-            />
-          </svg>
-        </button>
       </div>
     </Transition>
-    <Modal :show="isShowRule" @close="isShowRule = false">
+    <Modal
+      :show="isShowRule"
+      @close="isShowRule = false"
+    >
       <template #header> 規則 </template>
       <template #body>
         <RuleGuidePente v-if="ruleGuide === 'pente'"></RuleGuidePente>
@@ -59,23 +68,23 @@
   </Teleport>
 </template>
 <style scoped>
-  button {
+  .btn-menu {
     width: 40px;
     height: 40px;
     line-height: 1em;
     border: none;
     background-color: white;
-    border-radius: var(--radius-size, 20px);
+    border-radius: 20px;
     cursor: pointer;
     z-index: 1;
     position: absolute;
     top: 0.5rem;
     left: 0.5rem;
+    &:hover {
+      background-color: lightgray;
+    }
   }
-  button:hover {
-    background-color: lightgray;
-  }
-  .wrap {
+  .mask {
     height: 100vh;
     width: 100vw;
     background-color: rgba(0, 0, 0, 0.5);
@@ -85,13 +94,36 @@
     left: 0;
     z-index: 1;
     display: flex;
+    transition: opacity 0.3s ease;
   }
-  .lists {
+  .menu-lists {
     padding: 0;
     margin: auto auto;
     list-style: none;
+    transition: all 0.3s ease;
+    .btn-list {
+      border: 5px solid rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius-size);
+      padding: 0.5em 1em;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      display: block;
+      background-color: var(--primary);
+      font-weight: bold;
+      letter-spacing: 0.25em;
+      color: darkslategrey;
+      &:hover {
+        background-color: var(--secondary);
+      }
+    }
+    & > * + * {
+      margin-top: 2rem;
+    }
   }
-  .lists > * + * {
-    margin-top: 2rem;
+
+  .menu-enter-from,
+  .menu-leave-to {
+    opacity: 0;
   }
 </style>

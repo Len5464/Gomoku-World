@@ -9,18 +9,35 @@
   const checked = ref(1);
 </script>
 <template>
-  <div class="head">
-    <slot></slot>
-    <template v-for="index in tabNames.length" :key="index">
-      <input type="radio" name="tabs" :id="`tab${index}`" :value="index" v-model="checked" />
-      <label :for="`tab${index}`"> {{ tabNames[index - 1] }} </label>
+  <nav>
+    <header>
+      <slot></slot>
+      <template
+        v-for="index in tabNames.length"
+        :key="index"
+      >
+        <input
+          type="radio"
+          name="tabs"
+          :id="`tab${index}`"
+          :value="index"
+          v-model="checked"
+        />
+        <label :for="`tab${index}`"> {{ tabNames[index - 1] }} </label>
+      </template>
+    </header>
+    <template
+      v-for="index in tabNames.length"
+      :key="index"
+    >
+      <div
+        class="panel"
+        v-show="checked === index"
+      >
+        <slot :name="`tab${index}`">請將內容添加到插槽#tab{{ index }}</slot>
+      </div>
     </template>
-  </div>
-  <template v-for="index in tabNames.length" :key="index">
-    <div class="tab" v-show="checked === index">
-      <slot :name="`tab${index}`">請將內容添加到插槽#tab{{ index }}</slot>
-    </div>
-  </template>
+  </nav>
 </template>
 <style scoped>
   input {
@@ -35,15 +52,16 @@
     position: relative;
     top: 1px;
     font-size: 1.25rem;
+    cursor: pointer;
   }
   input:checked + label {
     background: #fff;
     border-bottom: 1px solid transparent;
   }
-  .head {
+  header {
     display: flex;
   }
-  .tab {
+  .panel {
     border-top: 1px solid #999;
     background-color: #fff;
     border-radius: 0 0 10px 10px;

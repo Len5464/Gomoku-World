@@ -80,7 +80,7 @@
     let i = directions.length;
     /**
      * @param {Coordinate} origin 原點座標陣列
-     * @returns {Array<Coordinate>} 五連珠的座標陣列
+     * @returns {Coordinate[][]} 五連珠的座標陣列
      */
     return function recursive(origin) {
       i--;
@@ -157,7 +157,7 @@
 </script>
 <template>
   <div
-    class="view"
+    class="board-view"
     @click="onCellClick"
     @transitionend="onFadeDone"
   >
@@ -169,7 +169,7 @@
         v-for="col in props.size"
         :key="col"
       >
-        <div class="cell-wrap">
+        <div class="cell">
           <span
             v-show="indexEnabled"
             class="index-tags"
@@ -177,7 +177,6 @@
             {{ formatBoardIndex(row, col) }}
           </span>
           <button
-            class="cell"
             :data-coordinate="`${row - 1}-${col - 1}`"
             :ref="(e) => (board[row - 1][col - 1] = e)"
             :disabled="!!props.winner"
@@ -189,68 +188,56 @@
 </template>
 
 <style scoped>
-  .view {
+  .board-view {
+    height: 100%;
+    aspect-ratio: 1/1;
+    margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(var(--board-size), 1fr);
+    grid-template-rows: repeat(var(--board-size), 1fr);
     margin: 0 auto;
-    width: calc(100vh - 213px);
-    height: calc(100vh - 213px);
   }
   .cell {
-    width: 100%;
-    height: 100%;
-    border: none;
-    background: none;
-    font-size: 1rem;
-    text-align: center;
-    padding: 0;
-    cursor: pointer;
-    position: absolute;
-    top: -2px;
-    z-index: 1;
-    opacity: 1;
-    color: black;
-  }
-  .cell[data-bingo="true"] {
-    background: linear-gradient(-45deg, var(--orange), var(--pink), var(--skyblue), var(--primary));
-    background-size: 400% 400%;
-    animation: AnimeGrade 15s ease infinite;
-  }
-  .cell-wrap {
     position: relative;
-    background-image: url("../assets/wood.png");
-    background-position: center center;
+    background: url("../assets/wood.png") center;
+    button {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index: 1;
+      border: none;
+      background: none;
+      font-size: 1.75rem;
+      padding: 0;
+      cursor: pointer;
+      color: black;
+      transition: all 0.3s ease-out;
+      &[data-bingo="true"] {
+        background: linear-gradient(-45deg, var(--orange), var(--pink), var(--skyblue), var(--primary));
+        background-size: 400% 400%;
+        animation: AnimeGrade 15s ease infinite;
+      }
+      @media screen and (max-width: 1200px) {
+        font-size: 1.25rem;
+      }
+    }
   }
 
   .fade-out {
     opacity: 0;
-    transition: all 0.3s ease-out;
     transform: scale(3);
   }
   .index-tags {
+    width: 100%;
+    height: 100%;
     position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 2;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.5);
     color: white;
     font-size: 12px;
     font-weight: bold;
-    padding: 0.25em;
-  }
-  @media screen and (min-width: 992px) {
-    .cell {
-      font-size: 1.25rem;
-    }
-  }
-  @media screen and (min-width: 1200px) {
-    .view {
-      width: 100vh;
-      height: 100vh;
-    }
-    .cell {
-      font-size: 1.75rem;
-    }
   }
 </style>

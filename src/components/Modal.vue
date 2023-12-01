@@ -6,7 +6,10 @@
 
 <template>
   <Transition name="modal">
-    <div v-if="show" class="modal-mask">
+    <div
+      v-if="show"
+      class="modal-mask"
+    >
       <div class="modal-container">
         <div class="modal-header">
           <slot name="header">default header</slot>
@@ -18,7 +21,12 @@
 
         <div class="modal-footer">
           <slot name="footer">
-            <button class="modal-default-button" @click="$emit('close')">OK</button>
+            <button
+              class="modal-default-button"
+              @click="$emit('close')"
+            >
+              OK
+            </button>
           </slot>
         </div>
       </div>
@@ -59,7 +67,8 @@
   .modal-body {
     margin: 20px 0;
     max-height: 50vh;
-    overflow: scroll;
+    overflow-y: scroll;
+    scrollbar-width: thin;
   }
 
   .modal-default-button {

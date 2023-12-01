@@ -1,27 +1,90 @@
 <script setup></script>
 <template>
-  <div class="full-screen bg-orange-blocks d-flex flex-column">
-    <header class="position-relative d-flex h-50 p-3" style="min-height: 380px">
-      <img src="../assets/header.png" alt="Header Image" />
-      <h1 class="position-absolute top-100 start-50 translate-middle fs-24px bg-dark text-light px-3 py-1 round">
-        單機五子棋
-      </h1>
+  <div class="view">
+    <header>
+      <img
+        src="../assets/header.png"
+        alt="Header Image"
+      />
+      <h1>雙人五子棋</h1>
     </header>
-    <main
-      class="mx-auto h-50 d-flex flex-column justify-content-center align-items-stretch"
-      style="gap: 2rem; width: 300px"
-    >
-      <RouterLink to="rule" class="btn btn-primary">經典規則</RouterLink>
-      <RouterLink :to="{ name: 'rule', query: { gameType: 'pente' } }" class="btn btn-primary">玉攻棋</RouterLink>
+    <main>
+      <ul role="list">
+        <li>
+          <RouterLink
+            to="rule"
+            class="btn"
+            >經典規則
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink
+            :to="{ name: 'rule', query: { gameType: 'pente' } }"
+            class="btn"
+            >玉攻棋
+          </RouterLink>
+        </li>
+      </ul>
     </main>
   </div>
 </template>
 
 <style scoped>
-  img {
-    margin: auto auto 0 auto;
-    width: 80vw;
+  .view {
+    height: 100vh;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-image: url("../assets/bg.svg");
+    background-position: center center;
+    background-size: 5%;
+  }
+  .btn {
+    border: 5px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-size);
+    padding: 0.5em 1em;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+    background-color: var(--primary);
+    font-weight: bold;
+    letter-spacing: 0.25em;
+    color: darkslategrey;
+    &:hover {
+      background-color: var(--secondary);
+    }
+  }
+  header {
+    height: 50%;
+    min-height: 380px;
     max-width: 920px;
-    height: auto;
+    position: relative;
+    display: flex;
+    align-items: end;
+  }
+  main {
+    height: 50%;
+    display: flex;
+    align-items: center;
+  }
+  h1 {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 80%);
+    font-size: 24px;
+    background-color: black;
+    color: #fff;
+    padding: 0.25rem 1rem;
+    border-radius: 25px;
+  }
+  ul {
+    padding-left: 0;
+    & > * {
+      margin-bottom: 1.5rem;
+    }
   }
 </style>

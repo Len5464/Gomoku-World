@@ -80,96 +80,126 @@
 </script>
 
 <template>
-  <div class="full-screen container-fluid">
-    <main class="row align-items-stretch">
-      <section
-        class="panel | col-xl-3 col-12 row flex-xl-column align-items-center pt-3 g-0 flow bg-white text-align-center"
+  <div class="view">
+    <div class="panel">
+      <MenuBtn
+        class="btn-menu"
+        :show="menuEnabled"
+        :ruleGuide="gameType"
+        @open="menuEnabled = true"
+        @close="menuEnabled = false"
       >
-        <MenuBtn
-          :show="menuEnabled"
-          :ruleGuide="gameType"
-          @open="menuEnabled = true"
-          @close="menuEnabled = false"
-        ></MenuBtn>
-        <h2 class="my-auto" v-if="!!game.winner">{{ game.winner }}獲勝</h2>
-        <h2 v-else class="my-auto">第{{ game.round }}回合</h2>
-        <div class="row col-10 col-xl-8 mx-auto px-0 py-2">
-          <span class="col-6">
-            {{ game.players[0] }} ⚫
-            <br />
-            {{ `${game.winCounts[0]}勝` }}
-            <strong class="player-point">{{ gameType === "pente" ? `  (補獲${game.captures[0]}/10)` : "" }}</strong>
-          </span>
-          <span class="col-6">
-            {{ game.players[1] }} ⚪
-            <br />
-            {{ `${game.winCounts[1]}勝` }}
-            <strong class="player-point">{{ gameType === "pente" ? `  (補獲${game.captures[1]}/10)` : "" }}</strong>
-          </span>
-        </div>
-        <Timer
-          ref="timer"
-          :time="sec"
-          v-slot="{ time, isRunning, pause, resume }"
-          @countdown="onCountDown"
-          :key="game.round"
-        >
-          <button
-            class="btn btn-sky | col-12 col-xl-8"
-            :disabled="!!game.winner"
-            @click="isRunning ? pause() : resume()"
-          >
-            <h2>{{ formatMMSS(time) }}</h2>
-            <svg
-              v-if="isRunning"
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              class="bi bi-pause-circle-fill"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.25 5C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5zm3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5z"
-              />
-            </svg>
-            <svg
-              v-else
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              class="bi bi-play-circle-fill"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"
-              />
-            </svg>
-          </button>
-        </Timer>
+      </MenuBtn>
+      <h2
+        class="round-info"
+        v-if="!!game.winner"
+      >
+        {{ game.winner }}獲勝
+      </h2>
+      <h2
+        class="round-info"
+        v-else
+      >
+        第{{ game.round }}回合
+      </h2>
+      <div class="score-info">
+        <span>
+          {{ game.players[0] }} ⚫
+          <br />
+          {{ `${game.winCounts[0]}勝` }}
+          <strong class="player-point">{{ gameType === "pente" ? `  (補獲${game.captures[0]}/10)` : "" }}</strong>
+        </span>
+        <span>
+          {{ game.players[1] }} ⚪
+          <br />
+          {{ `${game.winCounts[1]}勝` }}
+          <strong class="player-point">{{ gameType === "pente" ? `  (補獲${game.captures[1]}/10)` : "" }}</strong>
+        </span>
+      </div>
+      <Timer
+        ref="timer"
+        :time="sec"
+        v-slot="{ time, isRunning, pause, resume }"
+        @countdown="onCountDown"
+        :key="game.round"
+      >
         <button
-          class="btn btn-gray | col-6 col-xl-8"
+          class="timer"
+          :disabled="!!game.winner"
+          @click="isRunning ? pause() : resume()"
+        >
+          <h2>{{ formatMMSS(time) }}</h2>
+          <svg
+            v-if="isRunning"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-pause-circle-fill"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.25 5C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5zm3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5z"
+            />
+          </svg>
+          <svg
+            v-else
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-play-circle-fill"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"
+            />
+          </svg>
+        </button>
+      </Timer>
+      <div class="btn-group">
+        <button
+          class="btn-index"
           @pointerdown="game.indexEnabled = true"
           @pointerup="game.indexEnabled = false"
           @pointerleave="game.indexEnabled = false"
         >
           {{ game.isTurnWhite ? game.players[0] : game.players[1] }} @ {{ game.lastPlacement }}
         </button>
-        <button v-if="game.winner" class="btn btn-gray | col-6 col-xl-8 mb-auto" data-bingo="true" @click="onNextRound">
+        <button
+          v-if="game.winner"
+          class="btn-turn"
+          data-bingo="true"
+          @click="onNextRound"
+        >
           進入下一局
         </button>
-        <button v-else class="btn btn-gray | col-6 col-xl-8 mb-auto" disabled>
+        <button
+          v-else
+          class="btn-turn"
+          disabled
+        >
           {{ game.isTurnWhite ? "⚪" : "⚫" }} 的回合
         </button>
-      </section>
-      <section class="board | col-xl-9 col-12 g-0">
-        <Board :size="size" v-bind="game" @win="onWin" @played="onTurnChange" @capture="onCapture" :key="game.round" />
-      </section>
-    </main>
+      </div>
+    </div>
+    <div class="play-area">
+      <Board
+        class="board"
+        :size="size"
+        v-bind="game"
+        @win="onWin"
+        @played="onTurnChange"
+        @capture="onCapture"
+        :key="game.round"
+      />
+    </div>
   </div>
   <Teleport to="body">
-    <Modal :show="game.isTimeOut" @close="game.isTimeOut = false">
+    <Modal
+      :show="game.isTimeOut"
+      @close="game.isTimeOut = false"
+    >
       <template #header>
         <h3>超時落敗</h3>
       </template>
@@ -185,33 +215,148 @@
         <p>{{ game.winner }}獲勝</p>
       </template>
       <template #footer>
-        <RouterLink to="/" class="modal-default-button">回到主畫面</RouterLink>
+        <RouterLink
+          to="/"
+          class="btn-modal"
+        >
+          回到主畫面
+        </RouterLink>
       </template>
     </Modal>
   </Teleport>
 </template>
 <style scoped>
-  .btn-gray[data-bingo="true"] {
-    color: white;
-    background: linear-gradient(-90deg, var(--orange), var(--pink), var(--skyblue), var(--primary));
-    background-size: 400% 400%;
-    animation: AnimeGrade 15s ease infinite;
+  .view {
+    height: 100vh;
+    height: 100svh;
+    display: flex;
+    align-items: stretch;
+    @media screen and (max-width: 1200px) {
+      flex-direction: column;
+    }
   }
-  .board {
-    overflow-x: scroll;
+  .play-area {
+    overflow: scroll;
+    width: 100%;
+    height: 100%;
   }
+  .panel {
+    min-width: 300px;
+    background-color: #fff;
+    padding: 2rem;
+    position: relative;
+    text-align: center;
+    /* flex-shrink: 0; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+    @media screen and (max-width: 1200px) {
+      padding: 16px 0 0 0;
+      gap: 0;
+    }
+  }
+  .timer {
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--light);
+    border: 5px solid var(--skyblue);
+    border-radius: var(--radius-size);
+    cursor: pointer;
+    &:hover {
+      background-color: var(--gray-300);
+    }
+    @media screen and (max-width: 1200px) {
+      border-radius: 0;
+    }
+  }
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    @media screen and (max-width: 1200px) {
+      gap: 0;
+      flex-direction: row;
+      button {
+        width: 100%;
+      }
+    }
+  }
+  .btn-index {
+    border: 5px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-size);
+    background-color: var(--light);
+    color: black;
+    padding: 0.5em 1em;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    &:hover {
+      background-color: var(--gray-300);
+    }
+    @media screen and (max-width: 1200px) {
+      border-radius: 0;
+    }
+  }
+
+  .btn-turn {
+    border: 5px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-size);
+    background-color: var(--gray-600);
+    color: #fff;
+    padding: 0.5em 1em;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    &[data-bingo="true"] {
+      color: white;
+      background: linear-gradient(-90deg, var(--orange), var(--pink), var(--skyblue), var(--primary));
+      background-size: 400% 400%;
+      animation: AnimeGrade 15s ease infinite;
+    }
+    @media screen and (max-width: 1200px) {
+      border-radius: 0;
+    }
+  }
+  .btn-menu {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    top: 0;
+    left: 0;
+  }
+  .btn-modal {
+    float: right;
+    padding: 0.25rem 1rem;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    &:hover {
+      background-color: lightgray;
+      transition: 0.3s;
+    }
+  }
+  .round-info {
+    margin-bottom: 6rem;
+    @media screen and (max-width: 1200px) {
+      font-size: 18px;
+      margin: 0;
+    }
+  }
+  .score-info {
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+  }
+
   .bi {
     width: 25px;
     height: 25px;
     color: var(--skyblue);
-  }
-  @media screen and (max-width: 1200px) {
-    h2 {
-      font-size: 18px;
-    }
-    .panel {
-      --flow-space: 0;
-      --radius-size: 0;
-    }
   }
 </style>
