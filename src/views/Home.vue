@@ -6,10 +6,13 @@
         src="../assets/header.png"
         alt="Header Image"
       />
-      <h1>雙人五子棋</h1>
+      <h1 class="title">雙人五子棋</h1>
     </header>
     <main>
-      <ul role="list">
+      <ul
+        role="list"
+        class="menu-lists"
+      >
         <li>
           <RouterLink
             to="rule"
@@ -70,7 +73,7 @@
     display: flex;
     align-items: center;
   }
-  h1 {
+  .title {
     position: absolute;
     bottom: 0;
     left: 50%;
@@ -81,7 +84,7 @@
     padding: 0.25rem 1rem;
     border-radius: 25px;
   }
-  ul {
+  .menu-lists {
     padding-left: 0;
     & > * {
       margin-bottom: 1.5rem;
