@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup lang="ts">
+  import { GAME_TYPES } from "../typedef";
+</script>
 <template>
   <div class="view">
     <header>
@@ -6,20 +8,29 @@
         src="../assets/header.png"
         alt="Header Image"
       />
-      <h1>雙人五子棋</h1>
+      <h1 class="title">雙人五子棋</h1>
     </header>
     <main>
-      <ul role="list">
+      <ul
+        role="list"
+        class="menu-lists"
+      >
         <li>
           <RouterLink
-            to="rule"
+            :to="{
+              name: 'rule',
+              query: { gameType: GAME_TYPES[0] },
+            }"
             class="btn"
             >經典規則
           </RouterLink>
         </li>
         <li>
           <RouterLink
-            :to="{ name: 'rule', query: { gameType: 'pente' } }"
+            :to="{
+              name: 'rule',
+              query: { gameType: GAME_TYPES[1] },
+            }"
             class="btn"
             >玉攻棋
           </RouterLink>
@@ -70,7 +81,7 @@
     display: flex;
     align-items: center;
   }
-  h1 {
+  .title {
     position: absolute;
     bottom: 0;
     left: 50%;
@@ -81,7 +92,7 @@
     padding: 0.25rem 1rem;
     border-radius: 25px;
   }
-  ul {
+  .menu-lists {
     padding-left: 0;
     & > * {
       margin-bottom: 1.5rem;

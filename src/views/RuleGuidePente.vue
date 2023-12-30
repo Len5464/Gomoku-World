@@ -1,5 +1,5 @@
 <template>
-  <h2>玉攻棋 (Pente)</h2>
+  <h2 class="title">玉攻棋 (Pente)</h2>
   白色先行，黑白雙方輪流下一子。
   <ul class="flow">
     <li>
@@ -16,7 +16,7 @@
 </template>
 
 <style scoped>
-  h2 {
+  .title {
     padding-bottom: 0.5rem;
     margin-bottom: 1rem;
     border-bottom: 1px solid black;

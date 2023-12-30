@@ -1,19 +1,19 @@
-<script setup>
-  import { ref, onMounted, reactive, computed } from "vue";
+<script setup lang="ts">
+  import { ref, onMounted, reactive, computed, watchEffect, onUnmounted } from "vue";
   import Board from "../components/Board.vue";
-  import Timer from "../components/Timer.vue";
   import Modal from "../components/Modal.vue";
   import MenuBtn from "../components/MenuBtn.vue";
   import { RouterLink } from "vue-router";
-  const props = defineProps({
-    size: Number,
-    sec: Number,
-    players: Array,
-    roundType: String,
-    gameType: String,
-  });
-
-  const game = reactive({
+  import { useTimer } from "../helpers/countDownTimer";
+  import { formatSecToMMSS } from "../helpers/utils";
+  import { Game } from "../typedef";
+  const scoreMap = {
+    "one-round": 1,
+    "two-out-of-three": 2,
+    "three-out-of-five": 3,
+  };
+  const props = defineProps<Game.Setup>();
+  const game = reactive<Game.Status>({
     winner: "",
     lastPlacement: "",
     gameType: props.gameType,
@@ -24,37 +24,33 @@
     winCounts: [0, 0],
     captures: [0, 0],
     round: 1,
-    goalScore: props.roundType === "three-out-of-five" ? 3 : props.roundType === "two-out-of-three" ? 2 : 1,
+    goalScore: scoreMap[props.roundType],
   });
-  const isGameOver = computed(() => game.winCounts.some((value) => value >= game.goalScore));
-  const menuEnabled = ref(false);
-  const timer = ref(null);
-  const formatMMSS = (sec) => `
-    ${Math.floor(sec / 60 / 10)}${Math.floor((sec / 60) % 10)}
-    :
-    ${Math.floor((sec % 60) / 10)}${Math.floor((sec % 60) % 10)}
-  `;
 
-  function onCountDown(time) {
+  const isGameOver = computed(() => game.winCounts.some((value) => value >= game.goalScore));
+  const isMenuEnabled = ref(false);
+  const timer = reactive(useTimer(props.sec));
+
+  function onCountDown(time: number) {
     if (time <= 0) {
       const winner = game.isTurnWhite ? game.players[0] : game.players[1];
       game.isTimeOut = true;
       onWin(winner);
     }
   }
-  function onCapture(point) {
+  function onCapture(point: number) {
     const i = game.isTurnWhite ? 0 : 1;
     game.captures[i] += point;
     if (game.captures.some((value) => value >= 10)) onWin(game.players[i]);
   }
-  function onTurnChange(index) {
+  function onTurnChange(index: string) {
     game.isTurnWhite = !game.isTurnWhite;
     game.lastPlacement = index;
-    timer.value.reset();
+    timer.restart();
   }
-  function onWin(winner) {
+  function onWin(winner: string) {
     game.winner = winner;
-    timer.value.pause();
+    timer.pause();
     const i = game.players.indexOf(game.winner);
     if (i >= 0) game.winCounts[i]++;
   }
@@ -73,9 +69,17 @@
     game.captures.reverse();
   }
   onMounted(() => {
+    timer.resume();
     console.log(`棋盤大小：${props.size}`);
-    document.getElementById("app").style.setProperty("--board-size", `${props.size}`);
+    const app = document.getElementById("app");
+    if (app instanceof HTMLElement) app.style.setProperty("--board-size", `${props.size}`);
     if (props.gameType === "pente") game.players.reverse();
+  });
+  onUnmounted(() => {
+    timer.pause();
+  });
+  watchEffect(() => {
+    onCountDown(timer.sec);
   });
 </script>
 
@@ -84,10 +88,10 @@
     <div class="panel">
       <MenuBtn
         class="btn-menu"
-        :show="menuEnabled"
+        :show="isMenuEnabled"
         :ruleGuide="gameType"
-        @open="menuEnabled = true"
-        @close="menuEnabled = false"
+        @open="isMenuEnabled = true"
+        @close="isMenuEnabled = false"
       >
       </MenuBtn>
       <h2
@@ -116,47 +120,39 @@
           <strong class="player-point">{{ gameType === "pente" ? `  (補獲${game.captures[1]}/10)` : "" }}</strong>
         </span>
       </div>
-      <Timer
-        ref="timer"
-        :time="sec"
-        v-slot="{ time, isRunning, pause, resume }"
-        @countdown="onCountDown"
-        :key="game.round"
+      <button
+        class="timer"
+        :disabled="!!game.winner"
+        @click="timer.isCountingDown ? timer.pause() : timer.resume()"
       >
-        <button
-          class="timer"
-          :disabled="!!game.winner"
-          @click="isRunning ? pause() : resume()"
+        <h2>{{ formatSecToMMSS(timer.sec) }}</h2>
+        <svg
+          v-if="timer.isCountingDown"
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-pause-circle-fill"
+          viewBox="0 0 16 16"
         >
-          <h2>{{ formatMMSS(time) }}</h2>
-          <svg
-            v-if="isRunning"
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            class="bi bi-pause-circle-fill"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.25 5C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5zm3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5z"
-            />
-          </svg>
-          <svg
-            v-else
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            class="bi bi-play-circle-fill"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"
-            />
-          </svg>
-        </button>
-      </Timer>
+          <path
+            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.25 5C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5zm3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5z"
+          />
+        </svg>
+        <svg
+          v-else
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-play-circle-fill"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"
+          />
+        </svg>
+      </button>
       <div class="btn-group">
         <button
           class="btn-index"
@@ -194,36 +190,36 @@
         :key="game.round"
       />
     </div>
+    <Teleport to="body">
+      <Modal
+        :show="game.isTimeOut"
+        @close="game.isTimeOut = false"
+      >
+        <template #header>
+          <h3>超時落敗</h3>
+        </template>
+        <template #body>
+          <p>想太久嘍σ ﾟ∀ ﾟ&#41; ﾟ∀ﾟ&#41;σ</p>
+        </template>
+      </Modal>
+      <Modal :show="isGameOver">
+        <template #header>
+          <h3>恭喜！</h3>
+        </template>
+        <template #body>
+          <p>{{ game.winner }}獲勝</p>
+        </template>
+        <template #footer>
+          <RouterLink
+            to="/"
+            class="btn-modal"
+          >
+            回到主畫面
+          </RouterLink>
+        </template>
+      </Modal>
+    </Teleport>
   </div>
-  <Teleport to="body">
-    <Modal
-      :show="game.isTimeOut"
-      @close="game.isTimeOut = false"
-    >
-      <template #header>
-        <h3>超時落敗</h3>
-      </template>
-      <template #body>
-        <p>想太久嘍σ ﾟ∀ ﾟ&#41; ﾟ∀ﾟ&#41;σ</p>
-      </template>
-    </Modal>
-    <Modal :show="isGameOver">
-      <template #header>
-        <h3>恭喜！</h3>
-      </template>
-      <template #body>
-        <p>{{ game.winner }}獲勝</p>
-      </template>
-      <template #footer>
-        <RouterLink
-          to="/"
-          class="btn-modal"
-        >
-          回到主畫面
-        </RouterLink>
-      </template>
-    </Modal>
-  </Teleport>
 </template>
 <style scoped>
   .view {
@@ -360,3 +356,4 @@
     color: var(--skyblue);
   }
 </style>
+../global ../typedef

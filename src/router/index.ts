@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import Home from "../views/Home.vue";
+import { Route } from "../typedef";
 const routes = [
   { path: "/", name: "home", component: Home },
   { path: "/rule", name: "rule", component: () => import("../views/GameRule.vue") },
@@ -7,9 +8,9 @@ const routes = [
     path: "/game",
     name: "game",
     component: () => import("../views/Game.vue"),
-    props: (route) => ({
-      size: parseInt(route.query.size),
-      sec: parseInt(route.query.sec),
+    props: (route: Route) => ({
+      size: Number(route.query.size),
+      sec: Number(route.query.sec),
       players: route.query.players,
       roundType: route.query.roundType,
       gameType: route.query.gameType,

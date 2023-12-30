@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
   import { ref } from "vue";
-  const props = defineProps({
+  defineProps({
     tabNames: {
       type: Array,
       default: ["tab1", "tab2", "tab3"],
@@ -10,13 +10,14 @@
 </script>
 <template>
   <nav>
-    <header>
+    <header class="nav-header">
       <slot></slot>
       <template
         v-for="index in tabNames.length"
         :key="index"
       >
         <input
+          class="tab-radio"
           type="radio"
           name="tabs"
           :id="`tab${index}`"
@@ -40,25 +41,25 @@
   </nav>
 </template>
 <style scoped>
-  input {
+  .tab-radio {
     display: none;
+    & + label {
+      display: inline-block;
+      border: 1px solid #00000030;
+      border-radius: 10px 10px 0 0;
+      background: #eee;
+      padding: 4px 12px;
+      position: relative;
+      top: 1px;
+      font-size: 1.25rem;
+      cursor: pointer;
+    }
+    &:checked + label {
+      background: #fff;
+      border-bottom: 1px solid transparent;
+    }
   }
-  input + label {
-    display: inline-block;
-    border: 1px solid #00000030;
-    border-radius: 10px 10px 0 0;
-    background: #eee;
-    padding: 4px 12px;
-    position: relative;
-    top: 1px;
-    font-size: 1.25rem;
-    cursor: pointer;
-  }
-  input:checked + label {
-    background: #fff;
-    border-bottom: 1px solid transparent;
-  }
-  header {
+  .nav-header {
     display: flex;
   }
   .panel {
