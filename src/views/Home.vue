@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup lang="ts">
+  import { GAME_TYPES } from "../typedef";
+</script>
 <template>
   <div class="view">
     <header>
@@ -15,14 +17,20 @@
       >
         <li>
           <RouterLink
-            to="rule"
+            :to="{
+              name: 'rule',
+              query: { gameType: GAME_TYPES[0] },
+            }"
             class="btn"
             >經典規則
           </RouterLink>
         </li>
         <li>
           <RouterLink
-            :to="{ name: 'rule', query: { gameType: 'pente' } }"
+            :to="{
+              name: 'rule',
+              query: { gameType: GAME_TYPES[1] },
+            }"
             class="btn"
             >玉攻棋
           </RouterLink>

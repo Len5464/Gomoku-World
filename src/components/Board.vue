@@ -1,24 +1,17 @@
-<script setup>
-  // @ts-check
+<script setup lang="ts">
   import { onMounted, ref } from "vue";
-
-  const props = defineProps({
-    size: { type: Number, required: true },
-    isTurnWhite: Boolean,
-    winner: String,
-    indexEnabled: Boolean,
-    gameType: String,
-    players: {
-      type: Array,
-      default: ["p1", "p2"],
-    },
-  });
+  import { Coordinate, DIRECTIONS, Directions, Game } from "../typedef";
+  interface BoardProps extends Game.Status {
+    size: number;
+  }
+  const props = defineProps<BoardProps>();
   const emit = defineEmits({ played: String, win: String, capture: Number });
   const board = ref(Array.from({ length: props.size }, () => new Array(props.size))); // size*size array
-  function onCellClick(event) {
-    const coordinate = event.target.dataset.coordinate;
+  function onCellClick(event: MouseEvent) {
+    const target = event.target as HTMLButtonElement;
+    const coordinate = target.dataset.coordinate;
     if (!coordinate) return;
-    event.target.disabled = true;
+    target.disabled = true;
     const [row, col] = coordinate.split("-").map((e) => parseInt(e));
     const formattedIndex = formatBoardIndex(row + 1, col + 1);
     board.value[row][col].textContent = props.isTurnWhite ? "⚪" : "⚫";
@@ -49,25 +42,16 @@
     }
   }
 
-  /**
-   * @typedef {[Number ,Number]} Coordinate
-   */
-
   function CaptureChecker() {
-    const states = [];
-    const directions = ["NW", "N", "NE", "W", "E", "SW", "S", "SE"];
-    let i = directions.length;
-    /**
-     * @param {Coordinate} origin 原點座標陣列
-     * @returns {Array<Coordinate>} 捕獲的座標陣列
-     */
-    return function recursive(origin) {
+    const states: Coordinate[] = [];
+    let i = DIRECTIONS.length;
+    return function recursive(origin: Coordinate): Coordinate[] {
       i--;
       const queue = [];
       const pattern = props.isTurnWhite ? ["⚫", "⚫", "⚪"] : ["⚪", "⚪", "⚫"];
       for (let radius = 1; radius < 4; radius++) {
-        const target = getCoordinate(origin, directions[i], radius);
-        if (target.length && board.value[target[0]][target[1]].textContent === pattern[radius - 1]) queue.push(target);
+        const target = getCoordinate(origin, DIRECTIONS[i], radius);
+        if (target && board.value[target[0]][target[1]].textContent === pattern[radius - 1]) queue.push(target);
       }
       if (queue.length === 3) states.push(queue[0], queue[1]);
       return i > 0 ? recursive(origin) : states;
@@ -75,72 +59,74 @@
   }
 
   function FiveInRowChecker() {
-    const states = { NW: [], N: [], NE: [], W: [], E: [], SW: [], S: [], SE: [] };
-    const directions = Object.keys(states);
-    let i = directions.length;
-    /**
-     * @param {Coordinate} origin 原點座標陣列
-     * @returns {Coordinate[][]} 五連珠的座標陣列
-     */
-    return function recursive(origin) {
+    type SameColorStacks = { [key in Directions]: Coordinate[] };
+    const stacks: SameColorStacks = { NW: [], N: [], NE: [], W: [], E: [], SW: [], S: [], SE: [] };
+    let i = DIRECTIONS.length;
+    return function recursive(origin: Coordinate): Coordinate[][] {
       i--;
       let radius = 0;
       let sameColor = true;
       while (sameColor) {
         radius++;
-        const target = getCoordinate(origin, directions[i], radius);
-        if (!target.length) break;
+        const target = getCoordinate(origin, DIRECTIONS[i], radius);
+        if (!target) break;
         sameColor = board.value[origin[0]][origin[1]].textContent === board.value[target[0]][target[1]].textContent;
-        if (sameColor) states[directions[i]].push(target);
+        if (sameColor) stacks[DIRECTIONS[i]].push(target);
       }
       return i > 0
         ? recursive(origin)
         : [
-            [...states.E, origin, ...states.W],
-            [...states.NE, origin, ...states.SW],
-            [...states.N, origin, ...states.S],
-            [...states.NW, origin, ...states.SE],
+            [...stacks.E, origin, ...stacks.W],
+            [...stacks.NE, origin, ...stacks.SW],
+            [...stacks.N, origin, ...stacks.S],
+            [...stacks.NW, origin, ...stacks.SE],
           ].filter((e) => e.length >= 5);
     };
   }
-  /**
-   *
-   * @param {Coordinate} origin 原點座標陣列
-   * @param {String} direction "NW", "N", "NE", "W", "E", "SW", "S", "SE"
-   * @param {Number} radius 半徑
-   */
-  function getCoordinate(origin, direction, radius) {
+
+  function getCoordinate(origin: Coordinate, direction: Directions, radius: number): Coordinate | undefined {
     const [row, col] = origin;
-    const result =
-      direction === "E"
-        ? [row + radius, col]
-        : direction === "NE"
-        ? [row + radius, col + radius]
-        : direction === "N"
-        ? [row, col + radius]
-        : direction === "NW"
-        ? [row - radius, col + radius]
-        : direction === "W"
-        ? [row - radius, col]
-        : direction === "SW"
-        ? [row - radius, col - radius]
-        : direction === "S"
-        ? [row, col - radius]
-        : direction === "SE"
-        ? [row + radius, col - radius]
-        : [];
+    let result: Coordinate;
+    switch (direction) {
+      case "NW":
+        result = [row - radius, col - radius];
+        break;
+      case "N":
+        result = [row - radius, col];
+        break;
+      case "NE":
+        result = [row - radius, col + radius];
+        break;
+      case "W":
+        result = [row, col - radius];
+        break;
+      case "E":
+        result = [row, col + radius];
+        break;
+      case "SW":
+        result = [row + radius, col - radius];
+        break;
+      case "S":
+        result = [row + radius, col];
+        break;
+      case "SE":
+        result = [row + radius, col + radius];
+        break;
+      default:
+        result = [-1, -1];
+        break;
+    }
     const isInRange = result.every((xy) => xy >= 0 && xy < props.size);
-    return isInRange ? result : [];
+    return isInRange ? result : undefined;
   }
 
-  /**@type {( row:Number , col:Number )=> String} */
-  function formatBoardIndex(row, col) {
+  function formatBoardIndex(row: number, col: number): string {
     if (col > 26) return `${col}-${row}`;
     else return String.fromCodePoint(64 + col) + row;
   }
 
-  function onFadeDone(event) {
-    const cell = event.target;
+  function onFadeDone(event: TransitionEvent) {
+    const cell = event.target as HTMLButtonElement;
     if (cell.classList.contains("fade-out")) {
       cell.textContent = "";
       cell.disabled = false;

@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
   import { ref } from "vue";
   import Modal from "../components/Modal.vue";
   import RuleGuideClassic from "../views/RuleGuideClassic.vue";
   import RuleGuidePente from "../views/RuleGuidePente.vue";
-  const props = defineProps({
+  defineProps({
     show: Boolean,
     ruleGuide: String,
   });
@@ -13,7 +13,7 @@
 </script>
 <template>
   <button
-    class="btn-menu"
+    class="menu-btn"
     @click="emit('open')"
   >
     <svg
@@ -68,7 +68,7 @@
   </Teleport>
 </template>
 <style scoped>
-  .btn-menu {
+  .menu-btn {
     width: 40px;
     height: 40px;
     line-height: 1em;

@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
   import { ref } from "vue";
-  const props = defineProps({
+  defineProps({
     tabNames: {
       type: Array,
       default: ["tab1", "tab2", "tab3"],

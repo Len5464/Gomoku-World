@@ -1,18 +1,23 @@
-<script setup>
-  import { onMounted, ref, watchEffect } from "vue";
+<script setup lang="ts">
+  import { ref } from "vue";
   import { useRoute, useRouter } from "vue-router";
   import GoBack from "../components/GoBack.vue";
   import NavTabs from "../components/NavTabs.vue";
   import RuleGuideClassic from "../views/RuleGuideClassic.vue";
   import RuleGuidePente from "../views/RuleGuidePente.vue";
+  import { Game, ROUND_TYPES } from "../typedef";
+  import { isGameType } from "../helpers/utils";
   const router = useRouter();
   const route = useRoute();
-  const rule = ref({
+  const gameTypeStr = route.query?.gameType?.toString();
+  if (!isGameType(gameTypeStr)) throw new Error(`Invalid gameType: ${gameTypeStr}`);
+
+  const rule = ref<Game.Setup>({
     size: 15,
     sec: 120,
     players: ["玩家一", "玩家二"],
-    roundType: "only-one",
-    gameType: route.query?.gameType || "classic",
+    roundType: ROUND_TYPES[0],
+    gameType: gameTypeStr,
   });
   const sizeRange = [5, 20];
   const timeRange = [60, 600];
@@ -23,9 +28,6 @@
       window.alert(`遊戲時間必須介於${timeRange}秒之間`);
     else router.push({ name: "game", query: rule.value });
   }
-  onMounted(() => {
-    console.log();
-  });
 </script>
 <template>
   <div class="view">
@@ -98,9 +100,9 @@
                 id="round"
                 v-model="rule.roundType"
               >
-                <option value="only-one">單回合決勝負</option>
-                <option value="two-out-of-three">三戰兩勝</option>
-                <option value="three-out-of-five">五戰三勝</option>
+                <option :value="ROUND_TYPES[0]">單回合決勝負</option>
+                <option :value="ROUND_TYPES[1]">三戰兩勝</option>
+                <option :value="ROUND_TYPES[2]">五戰三勝</option>
               </select>
             </li>
           </ul>
@@ -191,3 +193,4 @@
     }
   }
 </style>
+../typedef

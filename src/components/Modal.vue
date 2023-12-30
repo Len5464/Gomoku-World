@@ -1,5 +1,5 @@
-<script setup>
-  const props = defineProps({
+<script setup lang="ts">
+  defineProps({
     show: Boolean,
   });
 </script>
